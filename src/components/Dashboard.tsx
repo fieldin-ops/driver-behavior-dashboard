@@ -81,7 +81,8 @@ export function Dashboard() {
   const eventCounts = useMemo(() => aggregateEventCounts(events), [events]);
   const deviceCounts = useMemo(() => countsByDeviceId(events), [events]);
   const machinesWithEvents = useMemo(() => machinesWithEventData(deviceCounts), [deviceCounts]);
-  const barCategories = machinesWithEvents.map((m) => m.machine_name);
+  const topMachinesByEvents = useMemo(() => machinesWithEvents.slice(0, 10), [machinesWithEvents]);
+  const barCategories = topMachinesByEvents.map((m) => m.machine_name);
 
   const donutData = [
     { label: "Harsh Braking", value: eventCounts.braking, color: "#16a34a" },
@@ -287,10 +288,10 @@ export function Dashboard() {
 
               <hr className="border-slate-200" />
 
-              {/* Charts — compact donut (1/3) + wide bar chart (2/3) on desktop */}
+              {/* Charts — compact donut (1/4) + wide bar chart (3/4) on desktop */}
               <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                 <div className="rounded-lg border border-slate-200 bg-slate-50/50 p-5 lg:col-span-1">
-                  <div className="mb-4">
+                  <div className="mb-4 text-center lg:text-left">
                     <h2 className="text-lg font-semibold text-navy">Events by Type</h2>
                     <p className="text-sm text-slate-500">
                       Distribution of {total} harsh driving events
@@ -303,10 +304,13 @@ export function Dashboard() {
                   <div className="mb-4">
                     <h2 className="text-lg font-semibold text-navy">Events by Machine</h2>
                     <p className="text-sm text-slate-500">
-                      Stacked counts for {machinesWithEvents.length} active machines
+                      Top 10 machines by event count
+                      {machinesWithEvents.length > 10
+                        ? ` · ${machinesWithEvents.length} active machines total`
+                        : ""}
                     </p>
                   </div>
-                  {machinesWithEvents.length > 0 ? (
+                  {topMachinesByEvents.length > 0 ? (
                     <HorizontalBarChart
                       categories={barCategories}
                       onSelectMachine={setSelectedMachine}
@@ -315,34 +319,34 @@ export function Dashboard() {
                           ? [
                               {
                                 name: "Accident Alerts",
-                                data: machinesWithEvents.map((m) => m.accident),
+                                data: topMachinesByEvents.map((m) => m.accident),
                                 color: "#dc2626",
                               },
                             ]
                           : []),
                         {
                           name: "Collisions",
-                          data: machinesWithEvents.map((m) => m.collision),
+                          data: topMachinesByEvents.map((m) => m.collision),
                           color: "#dc2626",
                         },
                         {
                           name: "Harsh Braking",
-                          data: machinesWithEvents.map((m) => m.braking),
+                          data: topMachinesByEvents.map((m) => m.braking),
                           color: "#16a34a",
                         },
                         {
                           name: "Harsh Cornering",
-                          data: machinesWithEvents.map((m) => m.cornering),
+                          data: topMachinesByEvents.map((m) => m.cornering),
                           color: "#d97706",
                         },
                         {
                           name: "Harsh Acceleration",
-                          data: machinesWithEvents.map((m) => m.acceleration),
+                          data: topMachinesByEvents.map((m) => m.acceleration),
                           color: "#2563eb",
                         },
                         {
                           name: "Overspeeding",
-                          data: machinesWithEvents.map((m) => m.overspeeding),
+                          data: topMachinesByEvents.map((m) => m.overspeeding),
                           color: "#9333ea",
                         },
                       ]}
