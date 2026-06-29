@@ -4,6 +4,7 @@ import {
   ArrowUpRight,
   ChevronDown,
   CornerDownRight,
+  Download,
   Gauge,
   Loader2,
   RefreshCw,
@@ -18,8 +19,10 @@ import { FALLBACK_EVENTS, loadEvents } from "../api/loadEvents";
 import { FLEET, mergeFleetWithStatus, NO_SENSOR } from "../data/fleet";
 import type { BehaviorEvent, FleetVehicle } from "../types";
 import { countNotReporting, countReporting } from "../utils/deviceStatus";
+import { downloadFleetCsv } from "../utils/csvExport";
 import {
   aggregateEventCounts,
+  buildSortedFleet,
   countsByDeviceId,
   machinesWithEventData,
   totalEvents,
@@ -29,6 +32,7 @@ import { HorizontalBarChart } from "./charts/HorizontalBarChart";
 import {
   DateRangePicker,
   dateRangeToTimestamps,
+  formatDateRangeLabel,
   getDefaultDateRange,
   type DateRangeSelection,
 } from "./DateRangePicker";
@@ -80,6 +84,7 @@ export function Dashboard() {
 
   const eventCounts = useMemo(() => aggregateEventCounts(events), [events]);
   const deviceCounts = useMemo(() => countsByDeviceId(events), [events]);
+  const sortedFleetRows = useMemo(() => buildSortedFleet(deviceCounts, fleet), [deviceCounts, fleet]);
   const machinesWithEvents = useMemo(() => machinesWithEventData(deviceCounts), [deviceCounts]);
   const topMachinesByEvents = useMemo(() => machinesWithEvents.slice(0, 10), [machinesWithEvents]);
   const barCategories = topMachinesByEvents.map((m) => m.machine_name);
@@ -361,12 +366,24 @@ export function Dashboard() {
 
               {/* Fleet table */}
               <section className="rounded-lg border border-slate-200 bg-slate-50/50 p-6">
-                <div className="mb-6">
-                  <h2 className="text-lg font-semibold text-navy">Full Fleet Overview</h2>
-                  <p className="text-sm text-slate-500">
-                    All {FLEET.length} machines · click a name to drill down · active machines listed
-                    first
-                  </p>
+                <div className="mb-6 flex items-start justify-between gap-4">
+                  <div>
+                    <h2 className="text-lg font-semibold text-navy">Full Fleet Overview</h2>
+                    <p className="text-sm text-slate-500">
+                      All {FLEET.length} machines · click a name to drill down · active machines listed
+                      first
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      downloadFleetCsv(sortedFleetRows, formatDateRangeLabel(dateRange))
+                    }
+                    className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-navy active:bg-slate-100"
+                  >
+                    <Download className="h-4 w-4" />
+                    Download CSV
+                  </button>
                 </div>
                 <FleetTable events={events} fleet={fleet} onSelectMachine={setSelectedMachine} />
               </section>
