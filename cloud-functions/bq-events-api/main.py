@@ -30,7 +30,9 @@ def get_events(request):
     query = f"""
         SELECT
             event_type,
+            device_imei,
             machine_name,
+            equipment_id,
             event_timestamp,
             speed_kmh,
             latitude,
@@ -53,7 +55,9 @@ def get_events(request):
     for row in rows:
         events.append({
             "event_type": row.event_type,
+            "device_imei": row.device_imei,
             "machine_name": row.machine_name,
+            "equipment_id": row.equipment_id,
             "event_timestamp": row.event_timestamp.isoformat() if row.event_timestamp else None,
             "speed_kmh": row.speed_kmh,
             "latitude": float(row.latitude) if row.latitude else None,

@@ -1,9 +1,30 @@
 import { EVENTS } from "../data/events";
+import { FLEET, FLEET_BY_IMEI } from "../data/fleet";
 import type { BehaviorEvent } from "../types";
 import { filterVisibleEvents } from "./eventFilter";
 
 const BQ_API = "https://us-central1-poodle-359607.cloudfunctions.net/bq-events-api";
 const DEFAULT_LOOKBACK_DAYS = 30;
+
+const FLEET_BY_EQUIPMENT_ID = Object.fromEntries(
+  FLEET.map((v) => [v.equipment_id, v.machine_name]),
+);
+
+function resolveMachineName(e: {
+  device_imei?: string | null;
+  equipment_id?: number | null;
+  machine_name?: string | null;
+}): string {
+  if (e.equipment_id != null) {
+    const byEquipment = FLEET_BY_EQUIPMENT_ID[e.equipment_id];
+    if (byEquipment) return byEquipment;
+  }
+  if (e.device_imei) {
+    const byImei = FLEET_BY_IMEI[e.device_imei]?.machine_name;
+    if (byImei) return byImei;
+  }
+  return e.machine_name ?? "Unknown";
+}
 
 export async function loadEvents(
   begin?: number,
@@ -29,7 +50,7 @@ export async function loadEvents(
       minute: "2-digit",
       hour12: true,
     }),
-    machine: e.machine_name,
+    machine: resolveMachineName(e),
     type: e.event_type,
     speed: e.speed_kmh ?? 0,
     lat: e.latitude ?? null,
