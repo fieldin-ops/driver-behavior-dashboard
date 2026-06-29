@@ -1,5 +1,4 @@
-const TOKEN = import.meta.env.VITE_FLESPI_TOKEN;
-const BASE = "https://flespi.io";
+const DEVICE_STATUS_API = "https://us-central1-poodle-359607.cloudfunctions.net/device-status-api";
 
 const REPORTING_WINDOW_SEC = 60 * 60;
 
@@ -31,25 +30,11 @@ export async function fetchDeviceConnectionStatus(
   const map = new Map<number, DeviceConnectionStatus>();
   if (deviceIds.length === 0) return map;
 
-  const url = `${BASE}/gw/devices/${deviceIds.join(",")}?fields=id,connected,telemetry.timestamp`;
-  const res = await fetch(url, {
-    headers: { Authorization: `FlespiToken ${TOKEN}` },
-  });
-  if (!res.ok) throw new Error(`Flespi ${res.status}`);
+  const res = await fetch(`${DEVICE_STATUS_API}?ids=${deviceIds.join(",")}`);
+  if (!res.ok) throw new Error(`Device status API ${res.status}`);
   const json = await res.json();
   for (const device of json.result as FlespiDeviceStatus[]) {
     map.set(device.id, parseDeviceStatus(device));
   }
   return map;
-}
-
-export async function fetchIntervals(calcId: number, fromTs: number, toTs: number) {
-  const data = JSON.stringify({ begin: fromTs, end: toTs });
-  const url = `${BASE}/gw/calcs/${calcId}/devices/all/intervals/all?data=${encodeURIComponent(data)}`;
-  const res = await fetch(url, {
-    headers: { Authorization: `FlespiToken ${TOKEN}` },
-  });
-  if (!res.ok) throw new Error(`Flespi ${res.status}`);
-  const json = await res.json();
-  return json.result as any[];
 }

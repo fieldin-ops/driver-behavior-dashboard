@@ -1,0 +1,12 @@
+---
+description: Never push to GitHub (production) without explicit user confirmation
+alwaysApply: true
+---
+
+# No GitHub Push Without Approval
+
+GitHub is the production environment for this project.
+
+- **NEVER** run `git push`, `gh pr create`, or deploy to GitHub Pages without asking the user first and receiving explicit confirmation.
+- Always develop and test locally first.
+- When ready to push, present a summary of changes and ask: "Ready to push to production?"

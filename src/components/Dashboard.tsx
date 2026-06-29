@@ -59,12 +59,12 @@ export function Dashboard() {
       const deviceIds = FLEET.filter((v) => v.has_sensor && v.flespi_device_id > 0).map(
         (v) => v.flespi_device_id,
       );
-      const [live, statusMap] = await Promise.all([
+      const [live, statusResult] = await Promise.all([
         loadEvents(begin, end),
-        fetchDeviceConnectionStatus(deviceIds),
+        fetchDeviceConnectionStatus(deviceIds).catch(() => new Map()),
       ]);
       setEvents(live);
-      setFleet(mergeFleetWithStatus(FLEET, statusMap));
+      setFleet(mergeFleetWithStatus(FLEET, statusResult));
       setLastRefreshed(new Date());
     } catch (err) {
       setEvents(FALLBACK_EVENTS);
@@ -162,7 +162,7 @@ export function Dashboard() {
               className="flex flex-col items-center justify-center gap-4 py-32"
             >
               <Loader2 className="h-10 w-10 animate-spin text-navy" />
-              <p className="text-sm text-slate-500">Loading events from Flespi…</p>
+              <p className="text-sm text-slate-500">Loading events…</p>
             </motion.div>
           ) : (
             <motion.div
