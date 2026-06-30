@@ -1,5 +1,4 @@
 import json
-import hashlib
 from datetime import datetime, timezone
 from google.cloud import bigquery
 import functions_framework
@@ -108,11 +107,6 @@ def ts_to_iso(ts) -> str | None:
     return datetime.fromtimestamp(ts, tz=timezone.utc).isoformat()
 
 
-def make_event_id(device_id, begin_ts, event_type) -> str:
-    raw = f"{device_id}_{begin_ts}_{event_type}"
-    return hashlib.md5(raw.encode()).hexdigest()
-
-
 def get_device_imei(interval: dict) -> str | None:
     ident = interval.get("ident") or interval.get("device.ident")
     if ident:
@@ -132,7 +126,8 @@ def get_device_imei(interval: dict) -> str | None:
 
 def transform_interval(interval: dict) -> dict | None:
     device_id = interval.get("device.id")
-    if device_id is None:
+    interval_id = interval.get("id")
+    if device_id is None or interval_id is None:
         return None
 
     device_imei = get_device_imei(interval)
@@ -150,9 +145,10 @@ def transform_interval(interval: dict) -> dict | None:
     fleet = FLEET_MAPPING.get(device_imei)
 
     return {
-        "event_id": make_event_id(device_id, begin, event_type),
+        "event_id": f"{device_id}_{interval_id}",
         "device_imei": device_imei,
         "flespi_device_id": device_id,
+        "flespi_interval_id": interval_id,
         "equipment_id": fleet["equipment_id"] if fleet else None,
         "machine_name": fleet["machine_name"] if fleet else None,
         "event_type": event_type,

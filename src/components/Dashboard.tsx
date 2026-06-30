@@ -7,7 +7,7 @@ import {
   Gauge,
   Loader2,
   RefreshCw,
-  Truck,
+  CarFront,
   Wifi,
   WifiOff,
 } from "lucide-react";
@@ -233,7 +233,7 @@ export function Dashboard() {
                   className="flex items-center gap-4 rounded-lg border border-slate-200 bg-white px-5 py-4 shadow-sm"
                 >
                   <div className="rounded-lg bg-navy/10 p-3">
-                    <Truck className="h-6 w-6 text-navy" />
+                    <CarFront className="h-6 w-6 text-navy" />
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-navy">{FLEET.length}</p>
