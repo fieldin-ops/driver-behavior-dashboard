@@ -1,8 +1,7 @@
-import { HIDE_ACCIDENT_ALERTS } from "../api/eventFilter";
 import type { BehaviorEvent } from "../types";
+import { DISPLAY_TIMEZONE } from "./constants";
 
 export function eventTypeColor(type: string): string {
-  if (type === "Accident Alert" || type === "Collision") return "#dc2626";
   if (type === "Harsh Cornering") return "#d97706";
   if (type === "Harsh Acceleration") return "#2563eb";
   if (type === "Harsh Braking") return "#16a34a";
@@ -11,7 +10,6 @@ export function eventTypeColor(type: string): string {
 }
 
 export function eventTypeBadgeClasses(type: string): string {
-  if (type === "Accident Alert" || type === "Collision") return "bg-red-50 text-danger border-red-200";
   if (type === "Harsh Cornering") return "bg-amber-50 text-warning border-amber-200";
   if (type === "Harsh Acceleration") return "bg-blue-50 text-accent-blue border-blue-200";
   if (type === "Harsh Braking") return "bg-green-50 text-success border-green-200";
@@ -20,7 +18,6 @@ export function eventTypeBadgeClasses(type: string): string {
 }
 
 export function eventRowBgClass(type: string): string {
-  if (type === "Accident Alert" || type === "Collision") return "bg-red-50/50";
   if (type === "Harsh Cornering") return "bg-amber-50/40";
   if (type === "Harsh Acceleration") return "bg-blue-50/40";
   if (type === "Overspeeding") return "bg-purple-50/40";
@@ -30,7 +27,11 @@ export function eventRowBgClass(type: string): string {
 export function groupEventsByDay(events: BehaviorEvent[]) {
   const dayMap = new Map<string, { total: number; types: Record<string, number> }>();
   for (const e of events) {
-    const day = new Date(e.time).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const day = new Date(e.time).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      timeZone: DISPLAY_TIMEZONE,
+    });
     const entry = dayMap.get(day) ?? { total: 0, types: {} };
     entry.total += 1;
     entry.types[e.type] = (entry.types[e.type] ?? 0) + 1;
@@ -42,8 +43,6 @@ export function groupEventsByDay(events: BehaviorEvent[]) {
   const dates = sorted.map(([d]) => d);
   const totals = sorted.map(([, v]) => v.total);
   const typeNames = [
-    "Collision",
-    ...(!HIDE_ACCIDENT_ALERTS ? ["Accident Alert"] : []),
     "Harsh Cornering",
     "Harsh Acceleration",
     "Harsh Braking",

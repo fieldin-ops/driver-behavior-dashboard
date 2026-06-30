@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { useMemo } from "react";
-import { HIDE_ACCIDENT_ALERTS } from "../api/eventFilter";
 import type { BehaviorEvent, FleetVehicle } from "../types";
 import {
   buildSortedFleet,
@@ -46,8 +45,6 @@ export function FleetTable({ events, fleet, onSelectMachine }: Props) {
               "Cornering",
               "Acceleration",
               "Overspeeding",
-              "Collision",
-              ...(!HIDE_ACCIDENT_ALERTS ? ["Accidents"] : []),
               "Total",
             ].map(
               (h) => (
@@ -93,10 +90,6 @@ export function FleetTable({ events, fleet, onSelectMachine }: Props) {
                 <td className="px-4 py-2.5 text-right font-medium">{formatCount(c.cornering, v.has_sensor)}</td>
                 <td className="px-4 py-2.5 text-right font-medium">{formatCount(c.acceleration, v.has_sensor)}</td>
                 <td className="px-4 py-2.5 text-right font-medium">{formatCount(c.overspeeding, v.has_sensor)}</td>
-                <td className="px-4 py-2.5 text-right font-medium">{formatCount(c.collision, v.has_sensor)}</td>
-                {!HIDE_ACCIDENT_ALERTS && (
-                  <td className="px-4 py-2.5 text-right font-medium">{formatCount(c.accident, v.has_sensor)}</td>
-                )}
                 <td className="px-4 py-2.5 text-right font-semibold text-navy">
                   {v.has_sensor ? total : "—"}
                 </td>

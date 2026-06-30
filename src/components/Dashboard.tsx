@@ -1,6 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  AlertTriangle,
   ArrowUpRight,
   ChevronDown,
   CornerDownRight,
@@ -13,11 +12,11 @@ import {
   WifiOff,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { HIDE_ACCIDENT_ALERTS } from "../api/eventFilter";
 import { fetchDeviceConnectionStatus } from "../api/flespi";
 import { FALLBACK_EVENTS, loadEvents } from "../api/loadEvents";
 import { FLEET, mergeFleetWithStatus, NO_SENSOR } from "../data/fleet";
 import type { BehaviorEvent, FleetVehicle } from "../types";
+import { DISPLAY_TIMEZONE } from "../utils/constants";
 import { countNotReporting, countReporting } from "../utils/deviceStatus";
 import { downloadFleetCsv } from "../utils/csvExport";
 import {
@@ -42,7 +41,12 @@ import { MachineDrilldown } from "./MachineDrilldown";
 import { StatCard } from "./StatCard";
 
 function formatLastUpdated(date: Date): string {
-  return date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
+  return date.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: DISPLAY_TIMEZONE,
+  });
 }
 
 export function Dashboard() {
@@ -94,10 +98,6 @@ export function Dashboard() {
     { label: "Harsh Cornering", value: eventCounts.cornering, color: "#d97706" },
     { label: "Harsh Acceleration", value: eventCounts.acceleration, color: "#2563eb" },
     { label: "Overspeeding", value: eventCounts.overspeeding, color: "#9333ea" },
-    { label: "Collisions", value: eventCounts.collision, color: "#dc2626" },
-    ...(!HIDE_ACCIDENT_ALERTS
-      ? [{ label: "Accident Alerts", value: eventCounts.accident, color: "#dc2626" }]
-      : []),
   ].filter((d) => d.value > 0);
 
   const total = totalEvents(eventCounts);
@@ -192,7 +192,7 @@ export function Dashboard() {
                 <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-slate-500">
                   Event Summary
                 </p>
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
                   <StatCard value={String(total)} label="Total Events" prominent index={0} />
                   <StatCard
                     value={String(eventCounts.braking)}
@@ -220,13 +220,6 @@ export function Dashboard() {
                     tone="purple"
                     icon={Gauge}
                     index={4}
-                  />
-                  <StatCard
-                    value={String(eventCounts.collision)}
-                    label="Collision"
-                    tone="danger"
-                    icon={AlertTriangle}
-                    index={5}
                   />
                 </div>
               </section>
@@ -320,20 +313,6 @@ export function Dashboard() {
                       categories={barCategories}
                       onSelectMachine={setSelectedMachine}
                       series={[
-                        ...(!HIDE_ACCIDENT_ALERTS
-                          ? [
-                              {
-                                name: "Accident Alerts",
-                                data: topMachinesByEvents.map((m) => m.accident),
-                                color: "#dc2626",
-                              },
-                            ]
-                          : []),
-                        {
-                          name: "Collisions",
-                          data: topMachinesByEvents.map((m) => m.collision),
-                          color: "#dc2626",
-                        },
                         {
                           name: "Harsh Braking",
                           data: topMachinesByEvents.map((m) => m.braking),

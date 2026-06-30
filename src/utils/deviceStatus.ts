@@ -1,4 +1,5 @@
 import type { FleetVehicle } from "../types";
+import { DISPLAY_TIMEZONE } from "./constants";
 
 export function formatLastSeen(timestamp: number | null): string {
   if (timestamp == null) return "Never";
@@ -11,6 +12,7 @@ export function formatLastSeen(timestamp: number | null): string {
     month: "short",
     day: "numeric",
     year: "numeric",
+    timeZone: DISPLAY_TIMEZONE,
   });
 }
 

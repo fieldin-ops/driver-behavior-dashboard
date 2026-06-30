@@ -23,15 +23,11 @@ export type EventCounts = {
   acceleration: number;
   braking: number;
   overspeeding: number;
-  accident: number;
-  collision: number;
 };
 
 export type FleetRow = FleetVehicle & EventCounts & { total: number };
 
 export type EventType =
-  | "Accident Alert"
-  | "Collision"
   | "Harsh Cornering"
   | "Harsh Acceleration"
   | "Harsh Braking"

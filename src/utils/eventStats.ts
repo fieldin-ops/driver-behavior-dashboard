@@ -6,8 +6,6 @@ export const EMPTY_COUNTS: EventCounts = {
   acceleration: 0,
   braking: 0,
   overspeeding: 0,
-  accident: 0,
-  collision: 0,
 };
 
 export function incrementCount(counts: EventCounts, type: string): EventCounts {
@@ -16,8 +14,6 @@ export function incrementCount(counts: EventCounts, type: string): EventCounts {
   else if (type === "Harsh Acceleration") next.acceleration += 1;
   else if (type === "Harsh Braking") next.braking += 1;
   else if (type === "Overspeeding") next.overspeeding += 1;
-  else if (type === "Accident Alert") next.accident += 1;
-  else if (type === "Collision") next.collision += 1;
   return next;
 }
 
@@ -37,18 +33,10 @@ export function countsByDeviceId(events: BehaviorEvent[]): Record<number, EventC
 }
 
 export function totalEvents(counts: EventCounts): number {
-  return (
-    counts.cornering +
-    counts.acceleration +
-    counts.braking +
-    counts.overspeeding +
-    counts.accident +
-    counts.collision
-  );
+  return counts.cornering + counts.acceleration + counts.braking + counts.overspeeding;
 }
 
 export function fleetRowTone(counts: EventCounts): "danger" | "warning" | "info" | undefined {
-  if (counts.collision > 0 || counts.accident > 0) return "danger";
   if (counts.cornering > 0) return "warning";
   if (counts.acceleration > 0) return "info";
   return undefined;

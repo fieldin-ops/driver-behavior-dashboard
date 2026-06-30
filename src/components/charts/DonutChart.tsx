@@ -21,7 +21,7 @@ type TooltipState = {
   y: number;
 };
 
-export function DonutChart({ data, size = 168 }: Props) {
+export function DonutChart({ data, size = 150 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
 
@@ -79,8 +79,8 @@ export function DonutChart({ data, size = 168 }: Props) {
   }
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <div ref={containerRef} className="relative" style={{ width: size, height: size }}>
+    <div className="mx-auto flex w-full max-w-[220px] flex-col items-center gap-3">
+      <div ref={containerRef} className="relative shrink-0" style={{ width: size, height: size }}>
         <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="overflow-visible">
           {segments.map((seg, i) => (
             <motion.path
@@ -114,11 +114,11 @@ export function DonutChart({ data, size = 168 }: Props) {
           )}
         </ChartTooltip>
       </div>
-      <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
+      <div className="flex w-full flex-col items-start gap-1.5">
         {segments.map((seg) => (
-          <div key={seg.label} className="flex items-center gap-1.5">
-            <div className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: seg.color }} />
-            <span className="text-xs text-slate-600">
+          <div key={seg.label} className="flex w-full items-center gap-1.5">
+            <div className="h-2 w-2 shrink-0 rounded-full" style={{ background: seg.color }} />
+            <span className="min-w-0 truncate text-[11px] leading-tight text-slate-600">
               {seg.label}{" "}
               <span className="text-slate-400">
                 {seg.value} · {Math.round(seg.pct)}%

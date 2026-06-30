@@ -1,6 +1,7 @@
 import { EVENTS } from "../data/events";
 import { FLEET, FLEET_BY_IMEI } from "../data/fleet";
 import type { BehaviorEvent } from "../types";
+import { DISPLAY_TIMEZONE } from "../utils/constants";
 import { filterVisibleEvents } from "./eventFilter";
 
 const BQ_API = "https://us-central1-poodle-359607.cloudfunctions.net/bq-events-api";
@@ -49,6 +50,7 @@ export async function loadEvents(
       hour: "numeric",
       minute: "2-digit",
       hour12: true,
+      timeZone: DISPLAY_TIMEZONE,
     }),
     machine: resolveMachineName(e),
     type: e.event_type,

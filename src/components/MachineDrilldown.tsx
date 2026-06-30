@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
-import { ArrowLeft, ArrowUpRight, CornerDownRight, Gauge, ShieldAlert } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, CornerDownRight, Gauge } from "lucide-react";
 import { useMemo } from "react";
-import { HIDE_ACCIDENT_ALERTS } from "../api/eventFilter";
 import { getMachineDeviceId } from "../data/fleet";
 import { parseEventTime } from "../data/events";
 import type { BehaviorEvent, FleetVehicle } from "../types";
@@ -33,8 +32,6 @@ function EventDotTimeline({ events }: { events: BehaviorEvent[] }) {
   const range = max - min || 1;
 
   const legend = [
-    { label: "Collision", type: "Collision" },
-    ...(!HIDE_ACCIDENT_ALERTS ? [{ label: "Accident", type: "Accident Alert" }] : []),
     { label: "Cornering", type: "Harsh Cornering" },
     { label: "Acceleration", type: "Harsh Acceleration" },
     { label: "Braking", type: "Harsh Braking" },
@@ -80,10 +77,6 @@ function EventDotTimeline({ events }: { events: BehaviorEvent[] }) {
 
 function DailyBarChart({ dates, byType }: { dates: string[]; byType: Record<string, number[]> }) {
   const series = [
-    { name: "Collisions", key: "Collision", color: "#dc2626" },
-    ...(!HIDE_ACCIDENT_ALERTS
-      ? [{ name: "Accident Alerts", key: "Accident Alert", color: "#dc2626" }]
-      : []),
     { name: "Harsh Cornering", key: "Harsh Cornering", color: "#d97706" },
     { name: "Harsh Acceleration", key: "Harsh Acceleration", color: "#2563eb" },
     { name: "Overspeeding", key: "Overspeeding", color: "#9333ea" },
@@ -133,7 +126,7 @@ export function MachineDrilldown({ machine, events, fleet, onBack, onSelectMachi
   const counts =
     vehicle?.has_sensor && deviceId != null
       ? getCountsForDevice(deviceCounts, deviceId, true)
-      : { cornering: 0, acceleration: 0, braking: 0, overspeeding: 0, accident: 0, collision: 0 };
+      : { cornering: 0, acceleration: 0, braking: 0, overspeeding: 0 };
   const machineEvents = useMemo(
     () => getMachineEvents(events, vehicle?.machine_name ?? machine),
     [events, machine, vehicle?.machine_name],
@@ -186,7 +179,7 @@ export function MachineDrilldown({ machine, events, fleet, onBack, onSelectMachi
 
       <div className="rounded-lg border border-slate-200 bg-slate-50/50 p-6">
         <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-slate-500">Event Summary</p>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
           <StatCard value={String(totalEvents(counts))} label="Total Events" prominent index={0} />
           <StatCard value={String(counts.braking)} label="Harsh Braking" tone="success" index={1} />
           <StatCard
@@ -209,13 +202,6 @@ export function MachineDrilldown({ machine, events, fleet, onBack, onSelectMachi
             tone="purple"
             icon={Gauge}
             index={4}
-          />
-          <StatCard
-            value={String(counts.collision)}
-            label="Collision"
-            tone="danger"
-            icon={ShieldAlert}
-            index={5}
           />
         </div>
       </div>

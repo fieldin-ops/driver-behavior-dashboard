@@ -9,7 +9,6 @@ const CSV_HEADERS = [
   "Harsh Acceleration",
   "Harsh Braking",
   "Overspeeding",
-  "Collision",
   "Total Events",
 ] as const;
 
@@ -52,7 +51,6 @@ export function fleetRowsToCsv(rows: FleetRow[]): string {
       row.has_sensor ? row.acceleration : "",
       row.has_sensor ? row.braking : "",
       row.has_sensor ? row.overspeeding : "",
-      row.has_sensor ? row.collision : "",
       row.has_sensor ? row.total : "",
     ];
     lines.push(fields.map(escapeCsvField).join(","));

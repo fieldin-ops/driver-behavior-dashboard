@@ -28,8 +28,6 @@ const SHORT_NAMES: Record<string, string> = {
   "Harsh Cornering": "Cornering",
   "Harsh Acceleration": "Acceleration",
   Overspeeding: "Overspeeding",
-  "Accident Alerts": "Accident",
-  Collisions: "Collision",
 };
 
 function formatBreakdown(series: Series[], index: number): string {

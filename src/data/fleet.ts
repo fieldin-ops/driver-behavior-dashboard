@@ -87,17 +87,10 @@ export function fleetRowFromVehicle(
     acceleration: 0,
     braking: 0,
     overspeeding: 0,
-    accident: 0,
-    collision: 0,
   },
 ): FleetRow {
   const total =
-    counts.cornering +
-    counts.acceleration +
-    counts.braking +
-    counts.overspeeding +
-    counts.accident +
-    counts.collision;
+    counts.cornering + counts.acceleration + counts.braking + counts.overspeeding;
   return { ...v, ...counts, total };
 }
 

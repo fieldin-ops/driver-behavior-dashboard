@@ -1,5 +1,6 @@
 import { FLEET_BY_DEVICE_ID } from "../data/fleet";
 import type { BehaviorEvent } from "../types";
+import { DISPLAY_TIMEZONE } from "../utils/constants";
 
 type FlespiInterval = {
   begin: number;
@@ -8,8 +9,6 @@ type FlespiInterval = {
   is_harsh_braking?: boolean | null;
   is_harsh_cornering?: boolean | null;
   is_harsh_acceleration?: boolean | null;
-  is_accident?: boolean | null;
-  is_collision?: boolean | null;
   is_overspeeding?: boolean | null;
 };
 
@@ -18,8 +17,6 @@ function getEventType(interval: FlespiInterval): string | null {
   if (interval.is_harsh_cornering) return "Harsh Cornering";
   if (interval.is_harsh_acceleration) return "Harsh Acceleration";
   if (interval.is_overspeeding) return "Overspeeding";
-  if (interval.is_collision) return "Collision";
-  if (interval.is_accident) return "Accident Alert";
   return null;
 }
 
@@ -31,6 +28,7 @@ function formatTimestamp(ts: number): string {
     hour: "numeric",
     minute: "2-digit",
     hour12: true,
+    timeZone: DISPLAY_TIMEZONE,
   });
 }
 

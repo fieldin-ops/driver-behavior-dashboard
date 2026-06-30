@@ -3,6 +3,7 @@ import { Calendar, ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { DISPLAY_TIMEZONE } from "../utils/constants";
 import "./date-range-picker.css";
 
 export type DateRangePreset = "7d" | "14d" | "30d" | "3m" | "6m" | "custom";
@@ -115,17 +116,20 @@ export function formatDateRangeLabel(selection: DateRangeSelection): string {
   const { begin, end } = dateRangeToTimestamps(selection);
   const start = new Date(begin * 1000);
   const endDate = new Date(end * 1000);
-  const sameYear = start.getFullYear() === endDate.getFullYear();
+  const yearFmt = new Intl.DateTimeFormat("en-US", { timeZone: DISPLAY_TIMEZONE, year: "numeric" });
+  const sameYear = yearFmt.format(start) === yearFmt.format(endDate);
 
   const startFmt = start.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
+    timeZone: DISPLAY_TIMEZONE,
     ...(sameYear ? {} : { year: "numeric" }),
   });
   const endFmt = endDate.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
+    timeZone: DISPLAY_TIMEZONE,
   });
 
   return `${startFmt} – ${endFmt}`;

@@ -4,9 +4,9 @@ import type { BehaviorEvent } from "../types";
 export const HIDE_ACCIDENT_ALERTS = true;
 
 export const ACCIDENT_ALERT_TYPE = "Accident Alert";
-export const COLLISION_TYPE = "Collision";
+const HIDDEN_EVENT_TYPES = new Set([ACCIDENT_ALERT_TYPE, "Collision"]);
 
 export function filterVisibleEvents(events: BehaviorEvent[]): BehaviorEvent[] {
   if (!HIDE_ACCIDENT_ALERTS) return events;
-  return events.filter((e) => e.type !== ACCIDENT_ALERT_TYPE);
+  return events.filter((e) => !HIDDEN_EVENT_TYPES.has(e.type));
 }
